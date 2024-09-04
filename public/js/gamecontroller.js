@@ -50,66 +50,46 @@ controllerButtons.forEach(btn => {
     })
 });
 
+(function () {
+    var isPrevDone = true
+    var reqCounter = 0
 
-// var dataStoreCounter = 0
+    var reqInter = setInterval(() => {
+        if (!isPrevDone) {
 
-// var dataStoreHostname = window.location.hostname.toString()
+            return
+        }
 
-// function getDataStore() {
-//     return new Promise(function (resolve, reject) {
-//         fetch("http://" + dataStoreHostname + ":3000/datastoreget", {
-//             method: "GET",
-//         }).then((res) => {
-//             if (res.status === 200) {
-//                 dataStoreCounter = parseInt(res.headers.get("sdss-data-store-counter"), 10)
-//                 res.text().then((v) => { resolve(JSON.parse(v)) })
-//             } else {
-//                 reject()
-//             }
-//         })
-//     })
-// }
+        isPrevDone = false
 
-// function setDataStore(data) {
-//     return new Promise(function (resolve, reject) {
-//         fetch("http://" + dataStoreHostname + ":3000/datastoreset", {
-//             method: "POST",
-//             headers: {
-//                 "sdss-data-store-counter": ((dataStoreCounter + 1) % 1000000000).toString(10)
-//             },
-//             body: JSON.stringify(data)
-//         }).then((res) => {
-//             if (res.status == 200) {
-//                 dataStoreCounter = dataStoreCounter + 1
-//                 resolve()
-//             } else {
-//                 reject()
-//             }
-//         })
-//     })
-// }
+        fetch("http://" + window.location.hostname.toString(10) + ":3000/sendpacket", {
+            method: "GET",
+            headers: {
+                "httptoudpserver-content": controllerState.join('-')
+            },
+        }).then((res) => {
+            if (res.status === 200) {
+                isPrevDone = true
+                reqCounter++
+            } else {
+                clearInterval(reqInter)
+            }
+        }).catch(() => {
+            clearInterval(reqInter)
+        })
 
-// var counter = 0
-// function pingDataStore() {
-//     getDataStore().then((ds) => {
-//         if (!ds.hasOwnProperty("next_id")) {
-//             ds.next_id = 1
-//         }
-//         ds.next_id++
-//         setDataStore(ds)
-//             .then(() => counter++)
-//             .catch(() => console.log(2))
-//             .finally(() => { setTimeout(() => pingDataStore(), 5) })
-//     }).catch(() => console.log(1))
-// }
+    }, 1000 / 30)
 
-// pingDataStore()
-
-// setInterval(() => {
-//     S("MainStatus").innerText = counter;
-//     counter = 0
-// }, 1000)
-
-setInterval(() => {
-    console.log(controllerState.join('-'))
-}, 1000)
+    setInterval(() => {
+        if (reqCounter >= 10) {
+            if (S("PingStatus").classList.contains("bg-rose-800")) {
+                S("PingStatus").classList.remove("bg-rose-800")
+            }
+        } else {
+            if (!S("PingStatus").classList.contains("bg-rose-800")) {
+                S("PingStatus").classList.add("bg-rose-800")
+            }
+        }
+        reqCounter = 0
+    }, 1000 / 2)
+})()
