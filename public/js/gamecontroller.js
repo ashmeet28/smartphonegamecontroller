@@ -15,7 +15,7 @@ S("FullscreenIcon").addEventListener("click", function (ev) {
 })
 
 
-var controllerButtons = [1, 2, 3, 4].map(function (x) {
+var controllerButtons = [1, 2, 3, 4, 5, 6, 7, 8].map(function (x) {
     return {
         elem: S("ControllerB" + x.toString(10)),
         controllerIndex: x
@@ -50,46 +50,49 @@ controllerButtons.forEach(btn => {
     })
 });
 
-(function () {
-    var isPrevDone = true
-    var reqCounter = 0
+setTimeout(() => {
+    (function () {
+        var isPrevDone = true
+        var reqCounter = 0
 
-    var reqInter = setInterval(() => {
-        if (!isPrevDone) {
+        var reqInter = setInterval(() => {
+            if (!isPrevDone) {
 
-            return
-        }
+                return
+            }
 
-        isPrevDone = false
+            isPrevDone = false
 
-        fetch("http://" + window.location.hostname.toString(10) + ":3000/sendpacket", {
-            method: "GET",
-            headers: {
-                "httptoudpserver-content": controllerState.join('-')
-            },
-        }).then((res) => {
-            if (res.status === 200) {
-                isPrevDone = true
-                reqCounter++
-            } else {
+            fetch("http://" + window.location.hostname.toString(10) + ":3000/sendpacket", {
+                method: "GET",
+                headers: {
+                    "httptoudpserver-content": controllerState.join('-')
+                },
+            }).then((res) => {
+                if (res.status === 200) {
+                    isPrevDone = true
+                    reqCounter++
+                } else {
+                    clearInterval(reqInter)
+                }
+            }).catch(() => {
                 clearInterval(reqInter)
-            }
-        }).catch(() => {
-            clearInterval(reqInter)
-        })
+            })
 
-    }, 1000 / 30)
+        }, 1000 / 120)
 
-    setInterval(() => {
-        if (reqCounter >= 10) {
-            if (S("PingStatus").classList.contains("bg-rose-800")) {
-                S("PingStatus").classList.remove("bg-rose-800")
+        setInterval(() => {
+            if (reqCounter >= 100) {
+                if (S("PingStatus").classList.contains("bg-rose-800")) {
+                    S("PingStatus").classList.remove("bg-rose-800")
+                }
+            } else {
+                if (!S("PingStatus").classList.contains("bg-rose-800")) {
+                    S("PingStatus").classList.add("bg-rose-800")
+                }
             }
-        } else {
-            if (!S("PingStatus").classList.contains("bg-rose-800")) {
-                S("PingStatus").classList.add("bg-rose-800")
-            }
-        }
-        reqCounter = 0
-    }, 1000 / 2)
-})()
+            console.log(reqCounter)
+            reqCounter = 0
+        }, 1000 / 2)
+    })()
+}, 3000)
