@@ -574,48 +574,40 @@ video {
   right: 0.25rem;
 }
 
-.top-1 {
-  top: 0.25rem;
-}
-
 .right-10 {
   right: 2.5rem;
+}
+
+.top-1 {
+  top: 0.25rem;
 }
 
 .grid {
   display: grid;
 }
 
-.h-16 {
-  height: 4rem;
+.h-1 {
+  height: 0.25rem;
 }
 
-.h-2 {
-  height: 0.5rem;
+.h-16 {
+  height: 4rem;
 }
 
 .h-56 {
   height: 14rem;
 }
 
-.h-1 {
-  height: 0.25rem;
+.w-1 {
+  width: 0.25rem;
 }
 
 .w-16 {
   width: 4rem;
 }
 
-.w-2 {
-  width: 0.5rem;
-}
-
 .w-56 {
   width: 14rem;
-}
-
-.w-1 {
-  width: 0.25rem;
 }
 
 .grid-cols-3 {
